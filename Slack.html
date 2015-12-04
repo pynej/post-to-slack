@@ -1,0 +1,150 @@
+<html>
+<head>
+	<title>Build a Post to Slack Bookmarklet</title>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<style>
+	label {
+		vertical-align:top;
+	}
+	.bookmarklet {
+		padding: .5em;
+		border: 1px solid grey;
+		border-radius: 3px;
+		background: #dfdfdf;
+		font-weight: bold;
+	}
+	.bookmarklet:hover {
+		background: #efefef;
+	}
+	.shareUrl {
+		word-wrap: break-word;
+	}
+	body {
+		max-width: 750px;
+		margin: 0 auto;
+		padding: 2em
+	}
+	textarea {
+		resize: none;
+	}
+	h2 {
+		padding-top: 1em;
+	}
+	</style>
+</head>
+<body>
+	<h1>Create a 'Post to Slack' bookmarklet for your toolbar.</h1>
+
+<p>Follow these simple steps to build a bookmarklet that will share the current page to your Slack channel when you click it in the toolbar.</p>
+
+<h2>Step 1: Enable a SlackBot for your Slack instance.</h2>
+<p>You will need administrator permissions to manage the integrations in Slack.</p>
+<p>You only need one Incoming WebHook regardless of how many people may end up using the bookmarklet or how many channels it can post to.</p>
+<ol>
+	<li>Go to Configure Integrations, scroll to the bottom, and click on Incoming WebHooks.</li>
+	<li>Select a channel and add the integration.  This channel may not matter as it can be overwritten below with a list of channels below.</li>
+	<li>Copy the Webhook URL to the filed below.</li>
+	<li>The name and icon content is posted as can be configured on this screen or in the settings below.</li>
+</ol>
+
+<h2>Step 2: Configure some required settings.</h2>
+<form>
+<p><label for="webhookUrl">Incoming WebHook URL:</label> <input for="webhookUrl" name="webhookUrl" placeholder="https://hooks.slack.com/services/" size="70"></p>
+<ul>
+	<li><small>Required: This can be fond on the Incoming Webhook Integration screen mentioned above.</small></li>
+</ul>
+
+<p><label for="botName">Post as Bot Name:</label> <input id="botName" name="botName" value="news-bot" placeholder="news-bot"></p>
+<ul>
+	<li><small>Optional: If this is not provided then the custom name on the Incoming Webhook will be used instead.<</small></li>
+</ul>
+
+<p><label for="botIcon">Post as Bot Icon:</label> <input id="botIcon" name="botIcon" value=":newspaper:" placeholder=":newspaper:"></p>
+<ul>
+	<li><small>Optional: If this is not provided then the custom icon on the Incoming Webhook will be used instead.</small></li>
+</ul>
+
+<p><label for="channelList">List of Channels to post to:</label> <textarea id="channelList" name="channelList" value="#general" placeholder="#general" cols="30" rows="10"></textarea></p>
+<ul>
+	<li><small>One per line, can include #channel and @users, first item will be the default.</small></li>
+	<li><small>Optional: If this is not provided then the channel on the Incoming Webhook will be used an no dialog will be show when the bookmarklet is clicked.</small></li>
+</ul>
+</form>
+
+<p><label for="slackName">Your Slack Username:</label> <input id="slackName" name="slackName" value="anonymous" placeholder="anonymous"></p>
+<ul>
+	<li><small>Optional: If this is not provided then the 'via username' text will not be added.</small></li>
+</ul>
+
+<h2>Step 3: Drag the bookmarklet to your toolbar.</h2>
+<p>Magic Bookmarklet, drag this to your toolbar to quickly click and share webpages when browsing.  No browser plugins required!</p>
+
+Drag this link ==> <a class="bookmarklet" href="javascript:(function(d) {this.loadScript = function(url,test,callback) {if (
+test == null) {script = d.createElement('script');script.type = 'text/javascript';script.async = true;
+script.onload = callback;script.src = url;d.getElementsByTagName('head')[0].appendChild(script);} else {c
+allback();}};this.showSlackDialog = function() {$('<div style=\'text-align:right\'><div><label \'width:40
+%; padding:0; margin:0; margin-right:.5em;\'>Channel:</label> <select name=\'slackChannel\' style=\'width
+:50%; padding:0; margin:0\'>{3}</select></div></div>').dialog({title:'Post to Slack',resizable:false,modal
+:false,buttons:{'Post':function() {var dia = $(this);$.post('{0}',JSON.stringify({'text':'<'+location.href
++'>{4}'{1}{2},'unfurl_links':true,'channel':$('[name=slackChannel]',this).val()}),function() {dia.di
+alog('close');}).fail(function(x,s,e) {dia.dialog('close');alert(s+':'+e);})}}})};loadScript('https://cod
+e.jquery.com/jquery-2.1.4.min.js',$&&$.fn&&$.fn.jquery,function() {loadScript('https://code.jquery.com/ui/1.11.4/j
+query-ui.min.js',$.fn.dialog,function() {var cssLink = $('<link>').attr( { rel:'stylesheet',type:'text/cs
+s',href:'https://code.jquery.com/ui/1.11.4/themes/humanity/jquery-ui.css' });$('head').append(cssLink); 
+showSlackDialog();});});}(document));" draggable="true">Post to Slack</a>
+
+<h2>Step 4: You can share this URL with other users once its configured.</h2>
+<p>This url will load this page and pre-fill all the above settings except the Slack Username so that you can easily share it with others on your team.</>
+<p>This will contain your private Incoming WebHook so you should not share it with unknown people or post it online.</p>
+<a class="shareUrl" href="#">url#settings</a>
+
+<script type="text/javascript">
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
+}
+
+!function(e,t){function n(t){return t.map(function(){return this.elements?e.makeArray(this.elements):this}).filter(":input:not(:disabled)").get()}function i(n){var i,a={};return e.each(n,function(e,n){i=a[n.name],i===t&&(a[n.name]=[]),a[n.name].push(n)}),a}var a=Array.prototype.push,o=/^(?:radio|checkbox)$/i,l=/\+/g,r=/^(?:option|select-one|select-multiple)$/i,s=/^(?:button|color|date|datetime|datetime-local|email|hidden|month|number|password|range|reset|search|submit|tel|text|textarea|time|url|week)$/i;e.fn.deserialize=function(c,u){var p,h,m=n(this),f=[];if(!c||!m.length)return this;if(e.isArray(c))f=c;else if(e.isPlainObject(c)){var d,g;for(d in c)e.isArray(g=c[d])?a.apply(f,e.map(g,function(e){return{name:d,value:e}})):a.call(f,{name:d,value:g})}else if("string"==typeof c){var v;for(c=c.split("&"),p=0,h=c.length;h>p;p++)v=c[p].split("="),a.call(f,{name:decodeURIComponent(v[0].replace(l,"%20")),value:decodeURIComponent(v[1].replace(l,"%20"))})}if(!(h=f.length))return this;var y,b,k,w,A,C,x,g,F,$,j,I,L=e.noop,N=e.noop,R={};for(u=u||{},m=i(m),e.isFunction(u)?N=u:(L=e.isFunction(u.change)?u.change:L,N=e.isFunction(u.complete)?u.complete:N),p=0;h>p;p++)if(y=f[p],A=y.name,g=y.value,F=m[A],F&&0!==F.length)if(R[A]===t&&(R[A]=0),j=R[A]++,F[j]&&(b=F[j],x=(b.type||b.nodeName).toLowerCase(),s.test(x)))L.call(b,b.value=g);else for(k=0,w=F.length;w>k;k++)if(b=F[k],x=(b.type||b.nodeName).toLowerCase(),C=null,o.test(x)?C="checked":r.test(x)&&(C="selected"),C){if(I=[],b.options)for($=0;$<b.options.length;$++)I.push(b.options[$]);else I.push(b);for($=0;$<I.length;$++)y=I[$],y.value==g&&L.call(y,(y[C]=!0)&&g)}return N.call(this),this}}(jQuery);
+
+
+function updateShareLink() {
+	location.hash = $("form").serialize();
+	//var shareUrl = location.href.replace(location.hash, "") + "#" + $("form").serialize()
+	$(".shareUrl").attr("href", location.href).html(location.href);
+}
+
+function updateBookmarklet() {
+	$(".bookmarklet").attr("href", href.format(
+			$("input[name=webhookUrl]").val(),
+			$("input[name=botName]").val() == "" ? "" : ",'username':'{0}'".format($("input[name=botName]").val()),
+			$("input[name=botIcon]").val() == "" ? "" : ",'icon_emoji':'{0}'".format($("input[name=botIcon]").val()),
+			$("textarea[name=channelList]").val() == "" ? "<option value=\\'\\'>Default Channel</option>" : "<option>{0}</option>".format($("textarea[name=channelList]").val().split("\n").join("</option><option>")),
+			$("input[name=slackName]").val() == "" ? "" : " via <@{0}>".format($("input[name=slackName]").val())
+		)	
+	);
+}
+
+// Store the oiginal code
+var href = $("a").attr("href");
+
+// Restore settings from hash.
+$("form").deserialize(location.hash.slice(1))
+
+updateBookmarklet()
+updateShareLink()
+
+$("input,textarea").change(function() {
+	updateBookmarklet()
+	updateShareLink()
+});
+
+</script>
+</body>
+</html>
